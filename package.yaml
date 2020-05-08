@@ -5,6 +5,8 @@ license:             BSD3
 author:              "Eric Conlon"
 maintainer:          "ejconlon@gmail.com"
 copyright:           "(c) 2020 Eric Conlon"
+category:            Logging
+synopsis:            Basic logging based on co-log
 
 extra-source-files:
 - README.md
