@@ -1,5 +1,5 @@
 name:                little-logger
-version:             0.1.0
+version:             0.2.0
 github:              "ejconlon/little-logger"
 license:             BSD3
 author:              "Eric Conlon"
@@ -15,11 +15,11 @@ description: Please see the README on GitHub at <https://github.com/ejconlon/lit
 
 dependencies:
 - base >= 4.12 && < 5
-- co-log >= 0.4
-- co-log-core >= 0.2
-- microlens >= 0.4
-- mtl >= 2.2
-- text >= 1.2
+- co-log >= 0.4 && < 1
+- co-log-core >= 0.2 && < 1
+- microlens >= 0.4 && < 1
+- mtl >= 2.2 && < 3
+- text >= 1.2 && < 2
 
 ghc-options:
 - -Wall
@@ -33,3 +33,16 @@ ghc-options:
 
 library:
   source-dirs: src
+
+tests:
+  little-logger-test:
+    main:                Main.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - little-logger
+    - tasty >= 1.2.3 && < 2
+    - tasty-hunit >= 0.10.0.2 && < 1

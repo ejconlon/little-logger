@@ -1,14 +1,18 @@
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE Rank2Types #-}
 
-{-| Basic logging based on co-log. The difference is that our log action runs in IO, and
-  we expect to use it in any IO-lifting monad. -}
+-- | Basic logging based on co-log. Meant to give you what you need to get started with a single module import.
 module LittleLogger
-  ( LogApp (..)
-  , SimpleLogAction
+  ( LogAction (..)
   , HasSimpleLog (..)
+  , Message
+  , Msg (..)
+  , Severity (..)
+  , SimpleLogAction
   , WithSimpleLog
-  , logAppLogAction
   , defaultSimpleLogAction
+  , filterActionSeverity
   , logMsg
   , logDebug
   , logError
@@ -16,7 +20,7 @@ module LittleLogger
   , logInfo
   , logWarning
   , logWithSeverity
-  , newLogApp
+  , runWithSimpleLogAction
   ) where
 
 import Colog.Actions (richMessageAction)
@@ -25,11 +29,11 @@ import Colog.Core.Severity (Severity (..))
 import Colog.Message (Message, Msg (..))
 import Control.Exception (Exception, displayException)
 import Control.Monad.IO.Class (MonadIO (..))
-import Control.Monad.Reader (MonadReader (..))
+import Control.Monad.Reader (MonadReader (..), ReaderT (..))
 import Data.Text (Text)
 import qualified Data.Text as Text
 import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
-import Lens.Micro (Lens', lens)
+import Lens.Micro (Lens')
 import Lens.Micro.Extras (view)
 import Prelude
 
@@ -38,10 +42,16 @@ type SimpleLogAction = LogAction IO Message
 class HasSimpleLog env where
   simpleLogL :: Lens' env SimpleLogAction
 
+instance HasSimpleLog SimpleLogAction where
+  simpleLogL = id
+
 type WithSimpleLog env m = (MonadIO m, MonadReader env m, HasSimpleLog env, HasCallStack)
 
 defaultSimpleLogAction :: SimpleLogAction
 defaultSimpleLogAction = richMessageAction
+
+filterActionSeverity :: Severity -> SimpleLogAction -> SimpleLogAction
+filterActionSeverity lim (LogAction f) = LogAction (\msg -> if msgSeverity msg >= lim then f msg else pure ())
 
 logMsg :: WithSimpleLog env m => Message -> m ()
 logMsg msg = do
@@ -67,13 +77,7 @@ logError = withFrozenCallStack (logWithSeverity Error)
 logException :: (WithSimpleLog env m, Exception e) => e -> m ()
 logException = withFrozenCallStack (logError . Text.pack . displayException)
 
-newtype LogApp = LogApp { _logAppLogAction :: SimpleLogAction }
-
-logAppLogAction :: Lens' LogApp SimpleLogAction
-logAppLogAction = lens _logAppLogAction (const LogApp)
-
-instance HasSimpleLog LogApp where
-  simpleLogL = logAppLogAction
-
-newLogApp :: LogApp
-newLogApp = LogApp defaultSimpleLogAction
+-- | Usually 'm' will be some kind of 'Reader' monad. In the case where you don't care what it
+-- is and you only need to do logging and IO, you can use this.
+runWithSimpleLogAction :: SimpleLogAction -> (forall env m. WithSimpleLog env m => m a) -> IO a
+runWithSimpleLogAction = flip runReaderT
