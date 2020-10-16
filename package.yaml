@@ -1,5 +1,5 @@
 name:                little-logger
-version:             0.2.0
+version:             0.3.0
 github:              "ejconlon/little-logger"
 license:             BSD3
 author:              "Eric Conlon"
@@ -20,6 +20,7 @@ dependencies:
 - microlens >= 0.4 && < 1
 - mtl >= 2.2 && < 3
 - text >= 1.2 && < 2
+- unliftio-core >= 0.1.2.0 && < 2
 
 ghc-options:
 - -Wall
@@ -33,6 +34,10 @@ ghc-options:
 
 library:
   source-dirs: src
+  exposed-modules:
+  - LittleLogger
+  - LittleLogger.Manual
+  - LittleLogger.Reader
 
 tests:
   little-logger-test:

@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 04ccafa118c9aff9469b3f6df3b75e278af4e203909e6cbc86a24b134f6125d3
+-- hash: aba3bd1382858101a107dccd5d1945a8fd38e248c5f95f8ebfa7c9f8c01e72e5
 
 name:           little-logger
-version:        0.2.0
+version:        0.3.0
 synopsis:       Basic logging based on co-log
 description:    Please see the README on GitHub at <https://github.com/ejconlon/little-logger#readme>
 category:       Logging
@@ -29,7 +29,10 @@ source-repository head
 library
   exposed-modules:
       LittleLogger
+      LittleLogger.Manual
+      LittleLogger.Reader
   other-modules:
+      LittleLogger.Common
       Paths_little_logger
   hs-source-dirs:
       src
@@ -41,6 +44,7 @@ library
     , microlens >=0.4 && <1
     , mtl >=2.2 && <3
     , text >=1.2 && <2
+    , unliftio-core >=0.1.2.0 && <2
   default-language: Haskell2010
 
 test-suite little-logger-test
@@ -61,4 +65,5 @@ test-suite little-logger-test
     , tasty >=1.2.3 && <2
     , tasty-hunit >=0.10.0.2 && <1
     , text >=1.2 && <2
+    , unliftio-core >=0.1.2.0 && <2
   default-language: Haskell2010
