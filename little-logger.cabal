@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: aba3bd1382858101a107dccd5d1945a8fd38e248c5f95f8ebfa7c9f8c01e72e5
+-- hash: b0fef8080b3eeaf20d63bd78a5dd95fd681c385a40581ee6fb4821e795a0da4d
 
 name:           little-logger
-version:        0.3.0
+version:        0.3.1
 synopsis:       Basic logging based on co-log
 description:    Please see the README on GitHub at <https://github.com/ejconlon/little-logger#readme>
 category:       Logging

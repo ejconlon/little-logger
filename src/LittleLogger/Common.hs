@@ -7,6 +7,7 @@ module LittleLogger.Common
   , defaultSimpleLogAction
   , filterActionSeverity
   , newSimpleLogAction
+  , runLogAction
   , runSimpleLogAction
   ) where
 
@@ -23,7 +24,10 @@ newSimpleLogAction :: MonadUnliftIO m => (Message -> m ()) -> m SimpleLogAction
 newSimpleLogAction f = fmap (\run -> LogAction (run . f)) askRunInIO
 
 runSimpleLogAction :: MonadIO m => SimpleLogAction -> Message -> m ()
-runSimpleLogAction (LogAction actIO) = liftIO . actIO
+runSimpleLogAction = runLogAction
+
+runLogAction :: MonadIO m => LogAction IO msg -> msg -> m ()
+runLogAction (LogAction actIO) = liftIO . actIO
 
 defaultSimpleLogAction :: SimpleLogAction
 defaultSimpleLogAction = richMessageAction
