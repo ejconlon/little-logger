@@ -1,5 +1,5 @@
 name:                little-logger
-version:             0.3.2
+version:             1.0.0
 github:              "ejconlon/little-logger"
 license:             BSD3
 author:              "Eric Conlon"
@@ -15,12 +15,17 @@ description: Please see the README on GitHub at <https://github.com/ejconlon/lit
 
 dependencies:
 - base >= 4.12 && < 5
-- co-log >= 0.4 && < 1
-- co-log-core >= 0.2 && < 1
+- monad-logger >= 0.3 && < 0.4
 - microlens >= 0.4 && < 1
 - mtl >= 2.2 && < 3
 - text >= 1.2 && < 2
 - unliftio-core >= 0.1.2.0 && < 2
+
+default-extensions:
+- ConstraintKinds
+- DerivingStrategies
+- DerivingVia
+- GeneralizedNewtypeDeriving
 
 ghc-options:
 - -Wall
@@ -34,10 +39,6 @@ ghc-options:
 
 library:
   source-dirs: src
-  exposed-modules:
-  - LittleLogger
-  - LittleLogger.Manual
-  - LittleLogger.Reader
 
 tests:
   little-logger-test:

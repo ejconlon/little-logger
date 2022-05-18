@@ -1,46 +1,44 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE Rank2Types #-}
 
 module Main (main) where
 
 import Control.Exception (finally)
 import Data.IORef (IORef, modifyIORef', newIORef, readIORef)
 import Data.Text (Text)
-import LittleLogger (LogAction (LogAction), Msg (msgSeverity, msgText), Severity (..), SimpleLogAction, WithSimpleLog,
-                     fileSimpleLogAction, filterActionSeverity, logDebug, logError, logInfo, logWarning,
-                     runWithSimpleLogAction)
+import LittleLogger (LogAction (..), LogLevel (..), LogActionM, runLogActionM, textLogStr,
+                     fileLogAction, filterActionSeverity, logDebugN, logErrorN, logInfoN, logWarnN)
 import System.Directory (removeFile)
 import System.IO.Temp (emptySystemTempFile)
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
 
-emitLogs :: WithSimpleLog env m => m ()
+emitLogs :: LogActionM ()
 emitLogs = do
-  logDebug "debug"
-  logInfo "info"
-  logWarning "warning"
-  logError "error"
+  logDebugN "debug"
+  logInfoN "info"
+  logWarnN "warn"
+  logErrorN "error"
 
-refAction :: IORef [(Severity, Text)] -> SimpleLogAction
-refAction ref = LogAction (\msg -> modifyIORef' ref (++ [(msgSeverity msg, msgText msg)]))
+refAction :: IORef [(LogLevel, Text)] -> LogAction
+refAction ref = LogAction (\_ _ lvl msg -> modifyIORef' ref (++ [(lvl, textLogStr msg)]))
 
-runWithRefAction :: (SimpleLogAction -> SimpleLogAction) -> (forall env m. WithSimpleLog env m => m ()) -> IO [(Severity, Text)]
+runWithRefAction :: (LogAction -> LogAction) -> (LogActionM ()) -> IO [(LogLevel, Text)]
 runWithRefAction f m = do
   ref <- newIORef []
   let action = f (refAction ref)
-  runWithSimpleLogAction action m
+  runLogActionM m action
   readIORef ref
 
-expectedFiltered :: [(Severity, Text)]
+expectedFiltered :: [(LogLevel, Text)]
 expectedFiltered =
-  [ (Warning, "warning")
-  , (Error, "error")
+  [ (LevelWarn, "warn")
+  , (LevelError, "error")
   ]
 
-expectedUnfiltered :: [(Severity, Text)]
+expectedUnfiltered :: [(LogLevel, Text)]
 expectedUnfiltered =
-  [ (Debug, "debug")
-  , (Info, "info")
+  [ (LevelDebug, "debug")
+  , (LevelInfo, "info")
   ] ++ expectedFiltered
 
 testUnfiltered :: TestTree
@@ -50,17 +48,17 @@ testUnfiltered = testCase "Unfiltered" $ do
 
 testFiltered :: TestTree
 testFiltered = testCase "Filtered" $ do
-  actual <- runWithRefAction (filterActionSeverity Warning) emitLogs
+  actual <- runWithRefAction (filterActionSeverity LevelWarn) emitLogs
   actual @?= expectedFiltered
 
 testFile :: TestTree
 testFile = testCase "File" $ do
   fp <- emptySystemTempFile "little-logger-test"
   flip finally (removeFile fp) $ do
-    fileSimpleLogAction fp (`runWithSimpleLogAction` emitLogs)
+    fileLogAction fp (runLogActionM emitLogs)
     firstContents <- readFile fp
     length (lines firstContents) @?= 4
-    fileSimpleLogAction fp (`runWithSimpleLogAction` emitLogs)
+    fileLogAction fp (runLogActionM emitLogs)
     secondContents <- readFile fp
     length (lines secondContents) @?= 8
 
