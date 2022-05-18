@@ -18,6 +18,7 @@ module LittleLogger
   , LogActionM
   , runLogActionM
   -- Re-exports
+  , MonadLogger (..)
   , Loc (..)
   , LogSource
   , LogLevel (..)
