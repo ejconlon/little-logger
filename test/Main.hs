@@ -5,8 +5,8 @@ module Main (main) where
 import Control.Exception (finally)
 import Data.IORef (IORef, modifyIORef', newIORef, readIORef)
 import Data.Text (Text)
-import LittleLogger (LogAction (..), LogLevel (..), LogActionM, runLogActionM, textLogStr,
-                     fileLogAction, filterActionSeverity, logDebugN, logErrorN, logInfoN, logWarnN)
+import LittleLogger (LogAction (..), LogActionM, LogLevel (..), fileLogAction, filterActionSeverity, logDebugN,
+                     logErrorN, logInfoN, logWarnN, runLogActionM, textLogStr)
 import System.Directory (removeFile)
 import System.IO.Temp (emptySystemTempFile)
 import Test.Tasty (TestTree, defaultMain, testGroup)

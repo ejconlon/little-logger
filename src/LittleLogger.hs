@@ -33,13 +33,15 @@ module LittleLogger
 
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.IO.Unlift (MonadUnliftIO, askRunInIO)
-import System.IO (BufferMode (LineBuffering), Handle, IOMode (AppendMode), hClose, hSetBuffering, openFile, withFile, stderr)
-import Control.Monad.Logger.CallStack (Loc (..), LogSource, LogLevel (..), LogStr, defaultOutput, MonadLogger (..), ToLogStr (..), logDebugN, logInfoN, logWarnN, logErrorN, logOtherN, fromLogStr)
-import Lens.Micro (Lens')
-import Control.Monad.Reader (MonadReader, asks, ReaderT (..))
-import Lens.Micro.Extras (view)
+import Control.Monad.Logger.CallStack (Loc (..), LogLevel (..), LogSource, LogStr, MonadLogger (..), ToLogStr (..),
+                                       defaultOutput, fromLogStr, logDebugN, logErrorN, logInfoN, logOtherN, logWarnN)
+import Control.Monad.Reader (MonadReader, ReaderT (..), asks)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8)
+import Lens.Micro (Lens')
+import Lens.Micro.Extras (view)
+import System.IO (BufferMode (LineBuffering), Handle, IOMode (AppendMode), hClose, hSetBuffering, openFile, stderr,
+                  withFile)
 
 textLogStr :: LogStr -> Text
 textLogStr = decodeUtf8 . fromLogStr
