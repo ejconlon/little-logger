@@ -1,12 +1,12 @@
 name:                little-logger
-version:             1.0.0
+version:             1.0.1
 github:              "ejconlon/little-logger"
 license:             BSD3
 author:              "Eric Conlon"
 maintainer:          "ejconlon@gmail.com"
-copyright:           "(c) 2020 Eric Conlon"
+copyright:           "(c) 2022 Eric Conlon"
 category:            Logging
-synopsis:            Basic logging based on co-log
+synopsis:            Basic logging based on monad-logger
 
 extra-source-files:
 - README.md
