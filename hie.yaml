@@ -1,7 +1,0 @@
-cradle:
-  stack:
-    - path: "./src"
-      component: "little-logger:lib"
-
-    - path: "./test"
-      component: "little-logger:test:little-logger-test"

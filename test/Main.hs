@@ -5,8 +5,19 @@ module Main (main) where
 import Control.Exception (finally)
 import Data.IORef (IORef, modifyIORef', newIORef, readIORef)
 import Data.Text (Text)
-import LittleLogger (LogAction (..), LogActionM, LogLevel (..), fileLogAction, filterActionSeverity, logDebugN,
-                     logErrorN, logInfoN, logWarnN, runLogActionM, textLogStr)
+import LittleLogger
+  ( LogAction (..)
+  , LogActionM
+  , LogLevel (..)
+  , fileLogAction
+  , filterActionSeverity
+  , logDebugN
+  , logErrorN
+  , logInfoN
+  , logWarnN
+  , runLogActionM
+  , textLogStr
+  )
 import System.Directory (removeFile)
 import System.IO.Temp (emptySystemTempFile)
 import Test.Tasty (TestTree, defaultMain, testGroup)
@@ -22,7 +33,7 @@ emitLogs = do
 refAction :: IORef [(LogLevel, Text)] -> LogAction
 refAction ref = LogAction (\_ _ lvl msg -> modifyIORef' ref (++ [(lvl, textLogStr msg)]))
 
-runWithRefAction :: (LogAction -> LogAction) -> (LogActionM ()) -> IO [(LogLevel, Text)]
+runWithRefAction :: (LogAction -> LogAction) -> LogActionM () -> IO [(LogLevel, Text)]
 runWithRefAction f m = do
   ref <- newIORef []
   let action = f (refAction ref)
@@ -39,7 +50,8 @@ expectedUnfiltered :: [(LogLevel, Text)]
 expectedUnfiltered =
   [ (LevelDebug, "debug")
   , (LevelInfo, "info")
-  ] ++ expectedFiltered
+  ]
+    ++ expectedFiltered
 
 testUnfiltered :: TestTree
 testUnfiltered = testCase "Unfiltered" $ do
@@ -63,8 +75,11 @@ testFile = testCase "File" $ do
     length (lines secondContents) @?= 8
 
 main :: IO ()
-main = defaultMain $ testGroup "LittleLogger" $
-  [ testUnfiltered
-  , testFiltered
-  , testFile
-  ]
+main =
+  defaultMain $
+    testGroup
+      "LittleLogger"
+      [ testUnfiltered
+      , testFiltered
+      , testFile
+      ]
