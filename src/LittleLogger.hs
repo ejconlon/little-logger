@@ -78,10 +78,10 @@ instance Monoid LogAction where
   mempty = LogAction (\_ _ _ _ -> pure ())
   mappend = (<>)
 
-newLogAction :: MonadUnliftIO m => (Loc -> LogSource -> LogLevel -> LogStr -> m ()) -> m LogAction
+newLogAction :: (MonadUnliftIO m) => (Loc -> LogSource -> LogLevel -> LogStr -> m ()) -> m LogAction
 newLogAction act = fmap (\run -> LogAction (\loc src lvl msg -> run (act loc src lvl msg))) askRunInIO
 
-runLogAction :: MonadIO m => LogAction -> Loc -> LogSource -> LogLevel -> LogStr -> m ()
+runLogAction :: (MonadIO m) => LogAction -> Loc -> LogSource -> LogLevel -> LogStr -> m ()
 runLogAction (LogAction act) loc src lvl msg = liftIO (act loc src lvl msg)
 
 defaultLogAction :: LogAction
@@ -94,16 +94,16 @@ filterActionSeverity lim (LogAction act) =
 handleLogAction :: Handle -> LogAction
 handleLogAction = LogAction . defaultOutput
 
-openLoggingHandle :: MonadIO m => FilePath -> m Handle
+openLoggingHandle :: (MonadIO m) => FilePath -> m Handle
 openLoggingHandle fp = do
   handle <- liftIO (openFile fp AppendMode)
   liftIO (hSetBuffering handle LineBuffering)
   pure handle
 
-closeLoggingHandle :: MonadIO m => Handle -> m ()
+closeLoggingHandle :: (MonadIO m) => Handle -> m ()
 closeLoggingHandle = liftIO . hClose
 
-fileLogAction :: MonadUnliftIO m => FilePath -> (LogAction -> m a) -> m a
+fileLogAction :: (MonadUnliftIO m) => FilePath -> (LogAction -> m a) -> m a
 fileLogAction fp f = do
   run <- askRunInIO
   liftIO $ withFile fp AppendMode $ \handle -> do
@@ -125,7 +125,7 @@ askLogAction = asks (view logActionL)
 newtype LogActionWrapperM env m a = LogActionM {unLogActionM :: m a}
   deriving newtype (Functor, Applicative, Monad, MonadIO, MonadReader env)
 
-instance WithLogAction env m => MonadLogger (LogActionWrapperM env m) where
+instance (WithLogAction env m) => MonadLogger (LogActionWrapperM env m) where
   monadLoggerLog loc src lvl msg = do
     LogAction act <- askLogAction
     liftIO (act loc src lvl (toLogStr msg))
