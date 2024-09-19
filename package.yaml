@@ -1,5 +1,5 @@
 name:                little-logger
-version:             1.0.2
+version:             3.0.0
 github:              "ejconlon/little-logger"
 license:             BSD3
 author:              "Eric Conlon"
@@ -16,8 +16,8 @@ description: Please see the README on GitHub at <https://github.com/ejconlon/lit
 dependencies:
 - base >= 4.12 && < 5
 - monad-logger >= 0.3 && < 0.4
-- microlens >= 0.4 && < 1
 - mtl >= 2.2 && < 3
+- optics >= 0.4 && < 1
 - text >= 1.2 && < 2.1
 - unliftio-core >= 0.1.2.0 && < 2
 

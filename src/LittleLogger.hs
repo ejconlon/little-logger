@@ -53,8 +53,7 @@ import Control.Monad.Logger.CallStack
 import Control.Monad.Reader (MonadReader, ReaderT (..), asks)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8)
-import Lens.Micro (Lens')
-import Lens.Micro.Extras (view)
+import Optics (Lens', equality', view)
 import System.IO
   ( BufferMode (LineBuffering)
   , Handle
@@ -114,7 +113,7 @@ class HasLogAction env where
   logActionL :: Lens' env LogAction
 
 instance HasLogAction LogAction where
-  logActionL = id
+  logActionL = equality'
 
 type WithLogAction env m = (MonadIO m, MonadReader env m, HasLogAction env)
 
